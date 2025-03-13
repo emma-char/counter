@@ -2,15 +2,16 @@
 // SPDX-FileCopyrightText: 2016-2025 Knut Reinert & MPI für molekulare Genetik
 // SPDX-License-Identifier: CC0-1.0
 
-#include <sharg/all.hpp>
-#include <iostream>
-#include "fastq_conversion.hpp"
+#include "configuration.hpp"
+#include "get_shape.hpp"
 
 #include <seqan3/alphabet/nucleotide/dna4.hpp>
 #include <seqan3/search/views/minimiser_hash.hpp>
 #include <seqan3/core/debug_stream.hpp>
 #include <seqan3/io/sequence_file/all.hpp>
+#include <sharg/all.hpp>
 
+#include <iostream>
 #include <unordered_map>
 
 using namespace seqan3::literals;
@@ -21,7 +22,7 @@ int main(int argc, char ** argv)
     configuration config{};
 
     // Parser
-    sharg::parser parser{"Fastq-to-Fasta-Converter", argc, argv};
+    sharg::parser parser{"K-mer-Counter", argc, argv};
 
     // General information.
     parser.info.author = "SeqAn-Team";
@@ -29,7 +30,7 @@ int main(int argc, char ** argv)
 
     // Positional option: The FASTQ file to convert.
     parser.add_positional_option(config.fasta_input,
-                                 sharg::config{.description = "The FASTQ file to convert.",
+                                 sharg::config{.description = "The FASTA file with sequences to count.",
                                                .validator = sharg::input_file_validator{{"fa", "fasta"}}});
     
     
@@ -100,10 +101,9 @@ int main(int argc, char ** argv)
     }
 
     */
-    convert_fastq(config); // Call fastq to fasta converter.
 
     if (config.verbose) // If flag is set.
-    	std::cerr << "Conversion was a success. Congrats!\n";
+    	std::cerr << "Counting was a success. Congrats!\n";
 
     return 0;
 }

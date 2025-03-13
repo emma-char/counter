@@ -4,12 +4,15 @@
 
 #pragma once
 
-#include "configuration.hpp"
+#include <string>
+#include <charconv>
 
-/*! \brief Function, converting fastq files to fasta files.
- *  \param config The configuration.
+#include <seqan3/search/kmer_index/shape.hpp>
+
+/*! \brief Function, converting a std::string to a seqan3::shape.
+ *  \param std::string The string shape.
  *
  *  Simple function, converting fastq files to fasta files using the seqan3 library.
  *  For more information about the SeqAn Library functions see https://docs.seqan.de/seqan3/main_user.
  */
-void convert_fastq(configuration const & config);
+seqan3::shape get_shape(std::string const & shape_str);
