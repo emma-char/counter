@@ -5,11 +5,11 @@
 name: License
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-  workflow_dispatch:
+  #push:
+  #  branches:
+  #    - main
+  #pull_request:
+  #workflow_dispatch:
 
 concurrency:
   group: license-${{ github.event.pull_request.number || github.ref }}
