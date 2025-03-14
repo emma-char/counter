@@ -4,7 +4,7 @@
 
 #include <gtest/gtest.h>
 
-#include <get_kmer_from_shape.hpp>
+#include <get_kmer_from_hash.hpp>
 
 #include "app_test.hpp"
 
