@@ -14,11 +14,24 @@ struct hash_to_kmer : public app_test
 
 TEST_F(hash_to_kmer, ungapped)
 {
-    uint64_t len{28};
+    uint64_t hash{28};
+    size_t kmer_len{3};
 
     std::string expected{"CTA"};
-    seqan3::shape shape{seqan3::ungapped{3}};
-    auto actual = get_kmer_from_hash(shape, str);
+    seqan3::shape shape{seqan3::ungapped{kmer_len}};
+    auto actual = get_kmer_from_hash(shape, hash);
+
+    EXPECT_EQ(expected, actual);
+}
+
+TEST_F(hash_to_kmer, lowest)
+{
+    uint64_t hash{0};
+    size_t kmer_len{3};
+
+    std::string expected{"AAA"};
+    seqan3::shape shape{seqan3::ungapped{kmer_len}};
+    auto actual = get_kmer_from_hash(shape, hash);
 
     EXPECT_EQ(expected, actual);
 }
