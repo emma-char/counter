@@ -10,6 +10,7 @@
 #include <seqan3/core/debug_stream.hpp>
 #include <sharg/all.hpp>
 
+#include <cereal/archives/xml.hpp>
 #include <iostream>
 
 using namespace seqan3::literals;
@@ -86,7 +87,10 @@ int main(int argc, char ** argv)
 
     }
 
-    counting_index index(config);
+    counting_index kmer_index(config);
+    std::ofstream os("out.cereal");
+    cereal::XMLOutputArchive archive( os );
+    kmer_index.save(archive);
 
     if (config.verbose) // If flag is set.
     	std::cerr << "Counting was a success. Congrats!\n";
