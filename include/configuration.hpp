@@ -5,10 +5,16 @@
 #pragma once
 
 #include <filesystem>
+#include <seqan3/search/kmer_index/shape.hpp>
 
 struct configuration
 {
     std::filesystem::path fasta_input{};
     std::filesystem::path fasta_output{};
     bool verbose{}; // Default is false.
+    std::string shape_input{"1111"};
+    uint8_t shape_size;
+    seqan3::shape shape;
+    uint8_t window_input{8};
+
 };
