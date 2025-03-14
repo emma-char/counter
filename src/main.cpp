@@ -38,10 +38,30 @@ int main(int argc, char ** argv)
     parser.add_option(config.fasta_output,
                       sharg::config{.short_id = 'o',
                                     .long_id = "output",
-                                    .description = "The output FASTA file.",
+                                    .description = "The output text file with counted Kmere.",
                                     .default_message = "Print to terminal (stdout)",
                                     .validator = sharg::output_file_validator{}});
 
+    //Validator for Kmer shape
+    sharg::regex_validator shape_validator{"[0-1]"};
+
+    //Kmer shape
+    parser.add_option(config.shape_input,
+                        sharg::config{.short_id = 's', 
+                                      .long_id = "shape", 
+                                      .description = "The shape of the Kmer.", 
+                                      .validator = shape_validator});
+    
+
+
+    //Window size input
+    parser.add_option(config.window_input, 
+                        sharg::config{.short_id = 'w',
+                                      .long_id = "window", 
+                                      .description = "The window size for the Kmer", 
+                                      });
+
+                                   
     // Flag: Verose output.
     parser.add_flag(
         config.verbose,
@@ -58,6 +78,16 @@ int main(int argc, char ** argv)
         return -1;
     }
 
+    auto shape = get_shape(config.shape_input);
+    auto shape_size = shape.size();
+    //auto sequence_size  
+
+    //Validating Window Input
+    if(config.window_input <= shape_size){
+        throw std::runtime_error("Window size to big");
+
+    }
+
 
     seqan3::sequence_file_input fin_from_filename{config.fasta_input};
 
@@ -66,7 +96,7 @@ int main(int argc, char ** argv)
         seqan3::debug_stream << "ID:  " << record.id() << '\n';
         seqan3::debug_stream << "SEQ: " << record.sequence() << '\n';
 
-        auto minimisers = record.sequence() | seqan3::views::minimiser_hash(seqan3::shape{seqan3::ungapped{4}}, seqan3::window_size{8});
+        auto minimisers = record.sequence() | seqan3::views::minimiser_hash(seqan3::shape{shape}, seqan3::window_size{8});
         seqan3::debug_stream << minimisers << '\n';
 
         std::unordered_map< uint64_t, int > u;
