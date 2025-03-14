@@ -49,7 +49,7 @@ int main(int argc, char ** argv)
     parser.add_option(config.shape_input,
                         sharg::config{.short_id = 's', 
                                       .long_id = "shape", 
-                                      .description = "The shape of the Kmer.", 
+                                      .description = "The shape of the Kmer.",
                                       .validator = shape_validator});
     
 
@@ -58,8 +58,7 @@ int main(int argc, char ** argv)
     parser.add_option(config.window_input, 
                         sharg::config{.short_id = 'w',
                                       .long_id = "window", 
-                                      .description = "The window size for the Kmer", 
-                                      });
+                                      .description = "The window size for the Kmer"});
 
                                    
     // Flag: Verose output.

@@ -11,6 +11,6 @@ struct configuration
     std::filesystem::path fasta_input{};
     std::filesystem::path fasta_output{};
     bool verbose{}; // Default is false.
-    std::string shape_input;
-    int window_input;
+    std::string shape_input{"1111"};
+    int window_input{8};
 };
