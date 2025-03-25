@@ -32,8 +32,8 @@ struct counting_index
 
             for (uint64_t i : minimisers){
                 //!TODO: insert k-mer count
-                u.insert(std::make_pair(i, 1));
-                seqan3::debug_stream << i << '\n';
+                u[i]++; //counting
+                seqan3::debug_stream << "k-mer hash: " << i << " -> Count: " << u[i] << '\n';
 
             }      
         }

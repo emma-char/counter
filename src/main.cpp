@@ -42,7 +42,7 @@ int main(int argc, char ** argv)
                                     .validator = sharg::output_file_validator{}});
 
     //Validator for Kmer shape
-    sharg::regex_validator shape_validator{"[0-1]"};
+    sharg::regex_validator shape_validator{"[0-1]"}; //!does not work
 
     //Kmer shape
     parser.add_option(config.shape_input,
@@ -88,6 +88,8 @@ int main(int argc, char ** argv)
     }
 
     counting_index kmer_index(config);
+
+
     std::ofstream os(config.output);
     cereal::XMLOutputArchive archive( os );
     kmer_index.save(archive);
