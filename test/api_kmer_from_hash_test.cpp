@@ -4,9 +4,10 @@
 
 #include <gtest/gtest.h>
 
-#include <get_kmer_from_hash.hpp>
+#include <transform.hpp>
 
 #include "app_test.hpp"
+#include <get_kmer_from_hash.hpp>
 
 // To prevent issues when running multiple API tests in parallel, give each API test unique names:
 struct hash_to_kmer : public app_test

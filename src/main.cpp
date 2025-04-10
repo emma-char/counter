@@ -5,12 +5,13 @@
 #include "configuration.hpp"
 #include "get_shape.hpp"
 #include "counting_index.hpp"
+#include "save_kmer_counts.hpp"
+#include "commands.hpp"
 
 #include <seqan3/alphabet/nucleotide/dna4.hpp>
 #include <seqan3/core/debug_stream.hpp>
 #include <sharg/all.hpp>
 
-#include <cereal/archives/xml.hpp>
 #include <iostream>
 
 using namespace seqan3::literals;
@@ -77,6 +78,44 @@ int main(int argc, char ** argv)
     }
 
 
+
+    sharg::parser top_level_parser{"mygit", argc, argv, sharg::update_notifications::on, {"push", "pull"}};
+ 
+ 
+    // Add information and flags, but no (positional) options to your top-level parser.
+    // Because of ambiguity, we do not allow any (positional) options for the top-level parser.
+    top_level_parser.info.description.push_back("You can push or pull from a remote repository.");
+    bool flag{false};
+    top_level_parser.add_flag(flag, sharg::config{.short_id = 'f', .long_id = "flag", .description = "some flag"});
+ 
+    try
+    {
+        top_level_parser.parse(); // trigger command line parsing
+    }
+    catch (sharg::parser_error const & ext) // catch user errors
+    {
+        std::cerr << "[Error] " << ext.what() << "\n"; // customise your error message
+        return -1;
+    }
+ 
+    // hold a reference to the sub_parser
+    sharg::parser & sub_parser = top_level_parser.get_sub_parser();
+ 
+    std::cout << "Proceed to sub parser.\n";
+ 
+    if (sub_parser.info.app_name == std::string_view{"mygit-pull"})
+        return run_git_pull(sub_parser);
+    else if (sub_parser.info.app_name == std::string_view{"mygit-push"})
+        return run_git_push(sub_parser);
+    else
+        std::cout << "Unhandled subparser named " << sub_parser.info.app_name << '\n';
+    // Note: Arriving in this else branch means you did not handle all sub_parsers in the if branches above.
+
+
+
+
+    
+
     //auto sequence_size  ...
     config.shape = get_shape(config.shape_input);
     config.shape_size = config.shape.size();
@@ -89,13 +128,12 @@ int main(int argc, char ** argv)
 
     counting_index kmer_index(config);
 
-
-    std::ofstream os(config.output);
-    cereal::XMLOutputArchive archive( os );
-    kmer_index.save(archive);
+    kmer_index.write(config.output);
 
     if (config.verbose) // If flag is set.
     	std::cerr << "Counting was a success. Congrats!\n";
+
+    
 
     return 0;
 }
