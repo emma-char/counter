@@ -114,6 +114,7 @@ int run_build(sharg::parser & parser)
 
 int run_set_intersection(sharg::parser & parser)
 {
+    (void)parser;
     std::cerr << "run_set_intersection is not implemented yet.\n";
     return 1;
 
@@ -122,6 +123,7 @@ int run_set_intersection(sharg::parser & parser)
 
 int run_set_difference(sharg::parser & parser)
 {
+    (void)parser;
     std::cerr << "run_set_difference is not implemented yet.\n";
     return 1;
 }
