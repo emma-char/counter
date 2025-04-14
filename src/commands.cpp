@@ -37,6 +37,7 @@ int run_set_union(sharg::parser & parser)
     counting_index idx2(args.index_file2);
     
     counting_index set_union(counting_index const & idx1, counting_index const & idx2);
+    return 0;
 
 }
 
