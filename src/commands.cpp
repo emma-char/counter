@@ -5,65 +5,15 @@
 #include <sharg/all.hpp>
 
 // =====================================================================================================================
-// Push/Pull Implementierungen
-// =====================================================================================================================
-
-int run_git_pull(sharg::parser & parser)
-{
-    pull_arguments args{};
- 
-    parser.add_positional_option(args.repository, sharg::config{.description = "The repository name to pull from."});
-    parser.add_positional_option(args.branch, sharg::config{.description = "The branch name to pull from."});
- 
-    try
-    {int run_git_pull(sharg::parser & parser);
-        struct pull_arguments
-        {
-            std::string repository{};
-            std::string branch{};
-            bool progress{false};
-        };
-        parser.parse();
-    }
-    catch (sharg::parser_error const & ext)
-    {
-        std::cerr << "[Error git pull] " << ext.what() << "\n";
-        return -1;
-    }
- 
-    std::cerr << "Git pull with repository " << args.repository << " and branch " << args.branch << '\n';
- 
-    return 0;
-}
-
-int run_git_push(sharg::parser & parser)
-{
-    push_arguments args{};
- 
-    parser.add_positional_option(args.repository, sharg::config{.description = "The repository name to push to."});
-    parser.add_positional_option(args.branches, sharg::config{.description = "The branch names to push."});
- 
-    try
-    {
-        parser.parse();
-    }
-    catch (sharg::parser_error const & ext)
-    {
-        std::cerr << "[Error git push] " << ext.what() << "\n";
-        return -1;
-    }
- 
-    std::cerr << "Git push with repository " << args.repository << " and branches ";
-    for (auto && branch : args.branches)
-        std::cerr << branch << ' ';
-    std::cerr << '\n';
- 
-    return 0;
-}
-
-// =====================================================================================================================
 // Mengenoperationen Implementierungen
 // =====================================================================================================================
+counting_index set_union(counting_index const & a, counting_index const & b)
+{
+    counting_index result = a;
+    for (auto const & [k, v] : b.u) // <-- use b.u here
+        result.u[k] += v;
+    return result;
+}
 
 int run_set_union(sharg::parser & parser)
 {
@@ -82,72 +32,96 @@ int run_set_union(sharg::parser & parser)
         return -1;
     }
 
-    std::unordered_map<uint64_t, uint64_t> index1;
-    std::unordered_map<uint64_t, uint64_t> index2;
-
     
-    //counting_index idx1 = load(args.index_file1);
+    counting_index idx1(args.index_file1);
+    counting_index idx2(args.index_file2);
+    
+    counting_index set_union(counting_index const & idx1, counting_index const & idx2);
 
-    std::unordered_map<uint64_t, uint64_t> result = index1;
-
-    for (auto &[k, v] : index2)
-        result[k] += v;
-
-    std::cout << "Union result has " << result.size() << " unique minimizers.\n";
-
-    return 0;
 }
 
-/*int run_set_intersection(sharg::parser & parser)
+int run_build(sharg::parser & parser)
 {
-    //set_arguments args;
+        // Configuration
+        build_arguments config{};
 
-    parser.add_positional_option(args.input_files, sharg::config{.description = "FASTA files to index and intersect."});
+        // Parser
+        //sharg::parser parser{"K-mer-Counter", argc, argv};
     
-    try { parser.parse(); }
-    catch (sharg::parser_error const & e)
-    {
-        std::cerr << "[Set Intersection Error] " << e.what() << '\n';
-        return -1;
+        // General information.
+        parser.info.author = "SeqAn-Team";
+        parser.info.version = "1.0.0";
+    
+        // Positional option: The FASTQ file to convert.
+        parser.add_positional_option(config.fasta_input,
+                                     sharg::config{.description = "The FASTA file with sequences to count.",
+                                                   .validator = sharg::input_file_validator{{"fa", "fasta"}}});
+        
+        
+        // Output file. Default: print to terminal 
+        parser.add_option(config.output,
+                          sharg::config{.short_id = 'o',
+                                        .long_id = "output",
+                                        .description = "The output file with counted Kmere.",
+                                        .default_message = "Print to terminal (stdout)",
+                                        .validator = sharg::output_file_validator{}});
+    
+        //Validator for Kmer shape
+        sharg::regex_validator shape_validator{"[0-1]"}; //!does not work
+    
+        //Kmer shape
+        parser.add_option(config.shape_input,
+                            sharg::config{.short_id = 's', 
+                                          .long_id = "shape", 
+                                          .description = "The shape of the Kmer.",
+                                          .validator = shape_validator});
+        
+    
+    
+        //Window size input
+        parser.add_option(config.window_input, 
+                            sharg::config{.short_id = 'w',
+                                          .long_id = "window", 
+                                          .description = "The window size for the Kmer"});
+    
+                                       
+        // Flag: Verose output.
+        parser.add_flag(
+            config.verbose,
+            sharg::config{.short_id = 'v', .long_id = "verbose", .description = "Give more detailed information."});
+        
+    //auto sequence_size  ...
+    config.shape = get_shape(config.shape_input);
+    config.shape_size = config.shape.size();
+
+    //Validating Window Input
+    if(config.window_input <= config.shape_size){
+        throw std::runtime_error("Window size to big");
+
     }
 
-    std::unordered_map<uint64_t, uint64_t> result;
-    bool first_file = true;
-    
-    // Iteriere über die Dateien und berechne die Intersection
-    for (auto const & file : args.input_files)
-    {
-        configuration cfg{.fasta_input = file, .shape = seqan3::ungapped{16}};
-        auto idx = build_index(cfg);
+    counting_index kmer_index(config);
 
-        if (first_file)
-        {
-            result = std::move(idx); // Das erste Index übernehmen
-            first_file = false;
-        }
-        else
-        {
-            // Intersection durch den Vergleich der beiden Indizes
-            for (auto it = result.begin(); it != result.end();)
-            {
-                auto idx_it = idx.find(it->first);
-                if (idx_it == idx.end())
-                    it = result.erase(it); // Element entfernen, wenn es nicht im zweiten Index ist
-                else
-                {
-                    // Minimale Häufigkeit beider Indizes
-                    it->second = std::min(it->second, idx_it->second);
-                    ++it;
-                }
-            }
-        }
-    }
+    kmer_index.write(config.output);
+
+    if (config.verbose) // If flag is set.
+    	std::cerr << "Counting was a success. Congrats!\n";
+
+    
+    return 0;
+        
+}
+
+int run_set_intersection(sharg::parser & parser)
+{
+    std::cerr << "run_set_intersection is not implemented yet.\n";
+    return 1;
 
 }
 
 
 int run_set_difference(sharg::parser & parser)
 {
-    // Implementierung für Difference
+    std::cerr << "run_set_difference is not implemented yet.\n";
+    return 1;
 }
-*/

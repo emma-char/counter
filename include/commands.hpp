@@ -24,24 +24,10 @@ struct push_arguments
 // Set Operations
 int run_set_union(sharg::parser & parser);
 
-struct union_arguments
-{
-    std::string index_file1{};
-    std::string index_file2{};
-};
 
 int run_set_intersection(sharg::parser & parser);
 
-struct intersection_arguments
-{
-    std::string index_file1{};
-    std::string index_file2{};
-};
 
 int run_set_difference(sharg::parser & parser);
 
-struct difference_arguments
-{
-    std::string index_file1{};
-    std::string index_file2{};
-};
+int run_build(sharg::parser & parser);

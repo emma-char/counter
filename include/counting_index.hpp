@@ -19,7 +19,7 @@ struct counting_index
     std::unordered_map< uint64_t, uint64_t > u;
     seqan3::shape shape;
 
-    counting_index(configuration const & config){
+    counting_index(build_arguments const & config){
         shape = config.shape;
         seqan3::sequence_file_input fin_from_filename{config.fasta_input};
 
