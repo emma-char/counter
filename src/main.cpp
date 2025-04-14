@@ -19,7 +19,7 @@ using namespace seqan3::literals;
 int main(int argc, char ** argv)
 {
 
-    sharg::parser top_level_parser{"counter", argc, argv, sharg::update_notifications::on, {"build", "union", "intersection", "diffrence"}};
+    sharg::parser top_level_parser{"K-mer-Counter", argc, argv, sharg::update_notifications::on, {"build", "union", "intersection", "difference"}};
  
  
     // Add information and flags, but no (positional) options to your top-level parser.
