@@ -19,12 +19,12 @@ using namespace seqan3::literals;
 int main(int argc, char ** argv)
 {
 
-    sharg::parser top_level_parser{"K-mer-Counter", argc, argv, sharg::update_notifications::on, {"build", "union", "intersection", "difference"}};
+    sharg::parser top_level_parser{"counter", argc, argv, sharg::update_notifications::on, {"build", "union", "intersection", "difference"}};
  
  
     // Add information and flags, but no (positional) options to your top-level parser.
     // Because of ambiguity, we do not allow any (positional) options for the top-level parser.
-    top_level_parser.info.description.push_back("You can push or pull from a remote repository.");
+    top_level_parser.info.description.push_back("....");
 
  
     try
@@ -36,6 +36,7 @@ int main(int argc, char ** argv)
         std::cerr << "[Error] " << ext.what() << "\n"; // customise your error message
         return -1;
     }
+ 
  
     // hold a reference to the sub_parser
     sharg::parser & sub_parser = top_level_parser.get_sub_parser();

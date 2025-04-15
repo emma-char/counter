@@ -101,6 +101,17 @@ int run_build(sharg::parser & parser)
 
     }
 
+    try
+    {
+        parser.parse();
+    }
+    catch (sharg::parser_error const & ext)
+    {
+        std::cerr << "[Error build] " << ext.what() << "\n";
+        return -1;
+    }
+
+
     counting_index kmer_index(config);
 
     kmer_index.write(config.output);
@@ -112,6 +123,7 @@ int run_build(sharg::parser & parser)
     return 0;
         
 }
+
 
 int run_set_intersection(sharg::parser & parser)
 {

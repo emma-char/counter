@@ -4,8 +4,6 @@
 
 #include <gtest/gtest.h>
 
-#include <transform.hpp>
-
 #include "app_test.hpp"
 #include <get_kmer_from_hash.hpp>
 
