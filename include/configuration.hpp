@@ -7,7 +7,7 @@
 #include <filesystem>
 #include <seqan3/search/kmer_index/shape.hpp>
 
-struct configuration
+struct build_arguments
 {
     std::filesystem::path fasta_input{};
     std::filesystem::path output{"output_index"};
@@ -17,4 +17,22 @@ struct configuration
     seqan3::shape shape;
     uint8_t window_input{8};
 
+};
+
+struct union_arguments
+{
+    std::string index_file1{};
+    std::string index_file2{};
+};
+
+struct intersection_arguments
+{
+    std::string index_file1{};
+    std::string index_file2{};
+};
+
+struct difference_arguments
+{
+    std::string index_file1{};
+    std::string index_file2{};
 };

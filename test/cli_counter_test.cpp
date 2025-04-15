@@ -11,8 +11,7 @@ struct counter : public app_test
 TEST_F(counter, no_options)
 {
     app_test_result const result = execute_app("counter");
-    std::string_view const expected{"K-mer-Counter\n"
-                                    "=============\n"
+    std::string_view const expected{"counter\n=======\n"
                                     "    Try -h or --help for more information.\n"};
 
     EXPECT_SUCCESS(result);
@@ -22,9 +21,8 @@ TEST_F(counter, no_options)
 
 TEST_F(counter, fail_no_argument)
 {
-    app_test_result const result = execute_app("counter", "-v");
-    std::string_view const expected{"Parsing error. Not enough positional arguments provided (Need at least 1). "
-                                    "See -h/--help for more information.\n"};
+    app_test_result const result = execute_app("counter","build", "-v");
+    std::string_view const expected{"[Error build] Not enough positional arguments provided (Need at least 1). See -h/--help for more information.\n"};
 
     EXPECT_FAILURE(result);
     EXPECT_EQ(result.out, "");
@@ -33,7 +31,7 @@ TEST_F(counter, fail_no_argument)
 
 TEST_F(counter, with_argument)
 {
-    app_test_result const result = execute_app("counter", data("seq.fasta"));
+    app_test_result const result = execute_app("counter","build", data("seq.fasta"));
 
     EXPECT_SUCCESS(result);
     //EXPECT_EQ(result.out, "");
@@ -42,7 +40,7 @@ TEST_F(counter, with_argument)
 
 TEST_F(counter, with_argument_verbose)
 {
-    app_test_result const result = execute_app("counter", data("seq.fasta"), "-v");
+    app_test_result const result = execute_app("counter", "build", data("seq.fasta"), "-v");
 
     EXPECT_SUCCESS(result);
     //EXPECT_EQ(result.out, "");
@@ -51,19 +49,19 @@ TEST_F(counter, with_argument_verbose)
 
 TEST_F(counter, missing_path)
 {
-    app_test_result const result = execute_app("counter", data("missing.fasta"), "-o", "");
+    app_test_result const result = execute_app("counter", "build", data("missing.fasta"), "-o", "");
 
     EXPECT_FAILURE(result);
     EXPECT_EQ(result.out, "");
-    EXPECT_EQ(result.err, "Parsing error. Missing value for option -o\n");
+    EXPECT_EQ(result.err, "[Error build] Missing value for option -o\n");
 }
 
 TEST_F(counter, invalid_path)
 {
-    app_test_result const result = execute_app("counter", data("seq.fasta"), "-o", "does_not_exist/out.fasta");
+    app_test_result const result = execute_app("counter", "build", data("seq.fasta"), "-o", "does_not_exist/out.fasta");
 
     EXPECT_FAILURE(result);
     //EXPECT_EQ(result.out, "");
     EXPECT_EQ(result.err,
-              "Parsing error. Validation failed for option -o/--output: Cannot write \"does_not_exist/out.fasta\"!\n");
+              "[Error build] Validation failed for option -o/--output: Cannot write \"does_not_exist/out.fasta\"!\n");
 }
