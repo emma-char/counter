@@ -23,16 +23,19 @@ struct union_arguments
 {
     std::string index_file1{};
     std::string index_file2{};
+    std::filesystem::path output{"union_result"};
 };
 
 struct intersection_arguments
 {
     std::string index_file1{};
     std::string index_file2{};
+    std::filesystem::path output{"intersection_result"};
 };
 
 struct difference_arguments
 {
     std::string index_file1{};
     std::string index_file2{};
+    std::filesystem::path output{"difference_result"};
 };
