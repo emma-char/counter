@@ -47,7 +47,7 @@ int main(int argc, char ** argv)
         return run_set_union(sub_parser);
     else if (sub_parser.info.app_name == std::string_view{"counter-intersection"})
         return run_set_intersection(sub_parser);
-    else if (sub_parser.info.app_name == std::string_view{"counter-diffrence"})
+    else if (sub_parser.info.app_name == std::string_view{"counter-difference"})
         return run_set_difference(sub_parser);
     else
         std::cout << "Unhandled subparser named " << sub_parser.info.app_name << '\n';
