@@ -24,6 +24,7 @@ struct union_arguments
     std::string index_file1{};
     std::string index_file2{};
     std::filesystem::path output{"union_result"};
+    std::filesystem::path txt_output{"union_result.txt"}; 
 };
 
 struct intersection_arguments
@@ -31,6 +32,7 @@ struct intersection_arguments
     std::string index_file1{};
     std::string index_file2{};
     std::filesystem::path output{"intersection_result"};
+    std::filesystem::path txt_output{"intersection_result.txt"}; 
 };
 
 struct difference_arguments
@@ -38,4 +40,5 @@ struct difference_arguments
     std::string index_file1{};
     std::string index_file2{};
     std::filesystem::path output{"difference_result"};
+    std::filesystem::path txt_output{"difference_result.txt"}; 
 };
