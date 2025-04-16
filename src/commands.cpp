@@ -2,22 +2,34 @@
 #include <iostream>
 #include "configuration.hpp" 
 #include "counting_index.hpp"
+#include "kmer_index.hpp"
 #include <sharg/all.hpp>
 
-// =====================================================================================================================
-// Mengenoperationen Implementierungen
-// =====================================================================================================================
-counting_index set_union(counting_index const & a, counting_index const & b)
+
+kmer_index set_union(counting_index const & a, counting_index const & b)
 {
-    counting_index result = a;
-    for (auto const & [k, v] : b.u) // <-- use b.u here
-        result.u[k] += v;
+    kmer_index result(a.shape);
+
+    for (auto const & [k, _] : a.u)
+        result.set.insert(k);
+
+    for (auto const & [k, _] : b.u)
+        result.set.insert(k);
+
     return result;
 }
 
 int run_set_union(sharg::parser & parser)
 {
     union_arguments args{};
+
+    // Output file. Default: print to terminal 
+    parser.add_option(args.output,
+        sharg::config{.short_id = 'o',
+                      .long_id = "output",
+                      .description = "The output file with union.",
+                      .default_message = "Print to terminal (stdout)",
+                      .validator = sharg::output_file_validator{}});
 
     parser.add_positional_option(args.index_file1, sharg::config{.description = "The first index file to merge."});
     parser.add_positional_option(args.index_file2, sharg::config{.description = "The second index file to merge."});
@@ -36,7 +48,10 @@ int run_set_union(sharg::parser & parser)
     counting_index idx1(args.index_file1);
     counting_index idx2(args.index_file2);
     
-    counting_index set_union(counting_index const & idx1, counting_index const & idx2);
+    kmer_index result = set_union(idx1, idx2);
+ 
+    result.write(args.output);
+
     return 0;
 
 }
@@ -112,9 +127,9 @@ int run_build(sharg::parser & parser)
     }
 
 
-    counting_index kmer_index(config);
+    counting_index index(config);
 
-    kmer_index.write(config.output);
+    index.write(config.output);
 
     if (config.verbose) // If flag is set.
     	std::cerr << "Counting was a success. Congrats!\n";
@@ -124,19 +139,100 @@ int run_build(sharg::parser & parser)
         
 }
 
-
-int run_set_intersection(sharg::parser & parser)
+kmer_index set_intersection(counting_index const & a, counting_index const & b)
 {
-    (void)parser;
-    std::cerr << "run_set_intersection is not implemented yet.\n";
-    return 1;
+    kmer_index result(a.shape); // assumes shape is the same
 
+    for (auto const & [k, _] : a.u)
+    {
+        if (b.u.contains(k))
+        {
+            result.set.insert(k);
+        }
+    }
+    return result;
 }
 
 
+int run_set_intersection(sharg::parser & parser)
+{
+    union_arguments args{};
+
+    parser.add_option(args.output,
+        sharg::config{.short_id = 'o',
+                      .long_id = "output",
+                      .description = "The output file with union.",
+                      .default_message = "Print to terminal (stdout)",
+                      .validator = sharg::output_file_validator{}});
+
+    parser.add_positional_option(args.index_file1, sharg::config{.description = "The first index file to merge."});
+    parser.add_positional_option(args.index_file2, sharg::config{.description = "The second index file to merge."});
+
+    try
+    {
+        parser.parse();
+    }
+    catch (sharg::parser_error const & ext)
+    {
+        std::cerr << "[Error set union] " << ext.what() << "\n";
+        return -1;
+    }
+
+    
+    counting_index idx1(args.index_file1);
+    counting_index idx2(args.index_file2);
+    
+    kmer_index result = set_intersection(idx1, idx2);
+
+    result.write(args.output);
+
+    return 0;
+
+}
+
+kmer_index set_difference(counting_index const & a, counting_index const & b)
+{
+    kmer_index result(a.shape); // assumes same shape in both a and b
+
+    for (auto const & [k, _] : a.u)
+    {
+        if (!b.u.contains(k))
+            result.set.insert(k);
+    }
+    return result;
+}
+
 int run_set_difference(sharg::parser & parser)
 {
-    (void)parser;
-    std::cerr << "run_set_difference is not implemented yet.\n";
-    return 1;
+    union_arguments args{};
+
+    parser.add_option(args.output,
+        sharg::config{.short_id = 'o',
+                      .long_id = "output",
+                      .description = "The output file with union.",
+                      .default_message = "Print to terminal (stdout)",
+                      .validator = sharg::output_file_validator{}});
+
+    parser.add_positional_option(args.index_file1, sharg::config{.description = "The first index file to merge."});
+    parser.add_positional_option(args.index_file2, sharg::config{.description = "The second index file to merge."});
+
+    try
+    {
+        parser.parse();
+    }
+    catch (sharg::parser_error const & ext)
+    {
+        std::cerr << "[Error set union] " << ext.what() << "\n";
+        return -1;
+    }
+
+    
+    counting_index idx1(args.index_file1);
+    counting_index idx2(args.index_file2);
+    
+    kmer_index result = set_difference(idx1, idx2);
+
+    result.write(args.output);
+
+    return 0;
 }
