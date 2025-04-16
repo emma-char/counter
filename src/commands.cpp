@@ -3,6 +3,7 @@
 #include "configuration.hpp" 
 #include "counting_index.hpp"
 #include "kmer_index.hpp"
+#include "save_set_opp.hpp"
 #include <sharg/all.hpp>
 
 
@@ -31,6 +32,13 @@ int run_set_union(sharg::parser & parser)
                       .default_message = "Print to terminal (stdout)",
                       .validator = sharg::output_file_validator{}});
 
+    parser.add_option(args.txt_output,
+        sharg::config{.short_id = 't',
+                      .long_id = "txt-output",
+                      .description = "The output txt file with union.",
+                      .default_message = "Print to terminal (stdout)",
+                      .validator = sharg::output_file_validator{}});
+
     parser.add_positional_option(args.index_file1, sharg::config{.description = "The first index file to merge."});
     parser.add_positional_option(args.index_file2, sharg::config{.description = "The second index file to merge."});
 
@@ -51,6 +59,7 @@ int run_set_union(sharg::parser & parser)
     kmer_index result = set_union(idx1, idx2);
  
     result.write(args.output);
+    save_set_opp(result, args.txt_output);
 
     return 0;
 
@@ -165,6 +174,15 @@ int run_set_intersection(sharg::parser & parser)
                       .default_message = "Print to terminal (stdout)",
                       .validator = sharg::output_file_validator{}});
 
+    parser.add_option(args.txt_output,
+        sharg::config{.short_id = 't',
+                      .long_id = "txt-output",
+                      .description = "The output txt file with union.",
+                      .default_message = "Print to terminal (stdout)",
+                      .validator = sharg::output_file_validator{}});
+
+
+
     parser.add_positional_option(args.index_file1, sharg::config{.description = "The first index file to merge."});
     parser.add_positional_option(args.index_file2, sharg::config{.description = "The second index file to merge."});
 
@@ -183,6 +201,7 @@ int run_set_intersection(sharg::parser & parser)
     counting_index idx2(args.index_file2);
     
     kmer_index result = set_intersection(idx1, idx2);
+    save_set_opp(result, args.txt_output);
 
     result.write(args.output);
 
@@ -213,6 +232,15 @@ int run_set_difference(sharg::parser & parser)
                       .default_message = "Print to terminal (stdout)",
                       .validator = sharg::output_file_validator{}});
 
+    parser.add_option(args.txt_output,
+        sharg::config{.short_id = 't',
+                      .long_id = "txt-output",
+                      .description = "The output txt file with union.",
+                      .default_message = "Print to terminal (stdout)",
+                      .validator = sharg::output_file_validator{}});
+
+
+
     parser.add_positional_option(args.index_file1, sharg::config{.description = "The first index file to merge."});
     parser.add_positional_option(args.index_file2, sharg::config{.description = "The second index file to merge."});
 
@@ -233,6 +261,7 @@ int run_set_difference(sharg::parser & parser)
     kmer_index result = set_difference(idx1, idx2);
 
     result.write(args.output);
+    save_set_opp(result, args.txt_output);
 
     return 0;
 }
