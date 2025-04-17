@@ -4,6 +4,7 @@
 #include "counting_index.hpp"
 #include "kmer_index.hpp"
 #include "save_set_opp.hpp"
+#include "save_kmer_counts.hpp"
 #include <sharg/all.hpp>
 
 
@@ -90,6 +91,13 @@ int run_build(sharg::parser & parser)
                                         .description = "The output file with counted Kmere.",
                                         .default_message = "Print to terminal (stdout)",
                                         .validator = sharg::output_file_validator{}});
+                                        
+        parser.add_option(config.txt_output,
+                            sharg::config{.short_id = 't',
+                                        .long_id = "txt-output",
+                                        .description = "The output txt file with kmere and counts.",
+                                        .default_message = "Print to terminal (stdout)",
+                                        .validator = sharg::output_file_validator{}});
     
         //Validator for Kmer shape
         sharg::regex_validator shape_validator{"[0-1]"}; //!does not work
@@ -139,6 +147,7 @@ int run_build(sharg::parser & parser)
     counting_index index(config);
 
     index.write(config.output);
+    save_kmer_counts(index, config.txt_output);
 
     if (config.verbose) // If flag is set.
     	std::cerr << "Counting was a success. Congrats!\n";
@@ -177,7 +186,7 @@ int run_set_intersection(sharg::parser & parser)
     parser.add_option(args.txt_output,
         sharg::config{.short_id = 't',
                       .long_id = "txt-output",
-                      .description = "The output txt file with union.",
+                      .description = "The output txt file with intersection.",
                       .default_message = "Print to terminal (stdout)",
                       .validator = sharg::output_file_validator{}});
 
@@ -235,7 +244,7 @@ int run_set_difference(sharg::parser & parser)
     parser.add_option(args.txt_output,
         sharg::config{.short_id = 't',
                       .long_id = "txt-output",
-                      .description = "The output txt file with union.",
+                      .description = "The output txt file with difference.",
                       .default_message = "Print to terminal (stdout)",
                       .validator = sharg::output_file_validator{}});
 

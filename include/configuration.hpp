@@ -11,6 +11,7 @@ struct build_arguments
 {
     std::filesystem::path fasta_input{};
     std::filesystem::path output{"output_index"};
+    std::filesystem::path txt_output{"output_index.txt"}; 
     bool verbose{}; // Default is false.
     std::string shape_input{"1111"};
     uint8_t shape_size;
