@@ -17,6 +17,7 @@ struct build_arguments
     uint8_t shape_size;
     seqan3::shape shape;
     uint8_t window_input{8};
+    uint64_t count_threshold{0};
 
 };
 

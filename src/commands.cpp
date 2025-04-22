@@ -5,6 +5,7 @@
 #include "kmer_index.hpp"
 #include "save_set_opp.hpp"
 #include "save_kmer_counts.hpp"
+#include "filter.hpp"
 #include <sharg/all.hpp>
 
 
@@ -116,6 +117,12 @@ int run_build(sharg::parser & parser)
                             sharg::config{.short_id = 'w',
                                           .long_id = "window", 
                                           .description = "The window size for the Kmer"});
+
+        parser.add_option(config.count_threshold,
+                            sharg::config{ .short_id = 'c',
+                                           .long_id = "count-threshold",
+                                           .description = "Filter out k-mers that appear less than or equal to this threshold.",
+                                           .default_message = "0 (no filtering)"});
     
                                        
         // Flag: Verose output.
@@ -145,6 +152,14 @@ int run_build(sharg::parser & parser)
 
 
     counting_index index(config);
+
+    if (config.count_threshold > 0)
+    {
+        filter_counts(index, config.count_threshold);
+
+    if (config.verbose)
+        std::cerr << "Applied count threshold: " << config.count_threshold << '\n';
+    }
 
     index.write(config.output);
     save_kmer_counts(index, config.txt_output);
