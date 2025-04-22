@@ -31,24 +31,12 @@ struct counting_index
             auto minimisers = record.sequence() | seqan3::views::minimiser_hash(seqan3::shape{config.shape}, seqan3::window_size{8});
             seqan3::debug_stream << minimisers << '\n';
 
-            // Get hash values
-            // uint64_t seed = 0x8F'3F'73'B5'CF'1C'9A'DE; // The default seed from minimiser_hash
-
-            // Use XOR on all minimiser values
-            /*auto hash_values = minimisers | std::views::transform
-                ([seed](uint64_t i)
-                {
-                    return i ^ seed;
-                });
-            */
 
             for (uint64_t i : minimisers){
                 u[i]++; //counting
                 
                 std::string kmer = get_kmer_from_hash(shape, i); // Convert hash to k-mer
                 
-                seqan3::debug_stream << "k-mer hash: " << i << " -> Count: " << u[i] 
-                                    << " -> k-mer: " << kmer << '\n';
             }   
             
             
