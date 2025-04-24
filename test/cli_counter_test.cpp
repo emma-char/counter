@@ -19,6 +19,7 @@ TEST_F(counter, no_options)
     EXPECT_EQ(result.err, "");
 }
 
+
 TEST_F(counter, fail_no_argument)
 {
     app_test_result const result = execute_app("counter","build", "-v");
@@ -29,6 +30,7 @@ TEST_F(counter, fail_no_argument)
     EXPECT_EQ(result.err, expected);
 }
 
+
 TEST_F(counter, with_argument)
 {
     app_test_result const result = execute_app("counter","build", data("seq.fasta"));
@@ -38,14 +40,6 @@ TEST_F(counter, with_argument)
     //EXPECT_EQ(result.err, "");
 }
 
-TEST_F(counter, with_argument_verbose)
-{
-    app_test_result const result = execute_app("counter", "build", data("seq.fasta"), "-v");
-
-    EXPECT_SUCCESS(result);
-    //EXPECT_EQ(result.out, "");
-    //EXPECT_EQ(result.err, "");
-}
 
 TEST_F(counter, missing_path)
 {

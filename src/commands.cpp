@@ -41,6 +41,8 @@ int run_set_union(sharg::parser & parser)
                       .default_message = "Print to terminal (stdout)",
                       .validator = sharg::output_file_validator{}});
 
+    
+
     parser.add_positional_option(args.index_file1, sharg::config{.description = "The first index file to merge."});
     parser.add_positional_option(args.index_file2, sharg::config{.description = "The second index file to merge."});
 
@@ -101,16 +103,14 @@ int run_build(sharg::parser & parser)
                                         .validator = sharg::output_file_validator{}});
     
         //Validator for Kmer shape
-        sharg::regex_validator shape_validator{"[0-1]"}; //!does not work
-    
+        sharg::regex_validator shape_validator{"[01]+"};
+        
         //Kmer shape
         parser.add_option(config.shape_input,
                             sharg::config{.short_id = 's', 
                                           .long_id = "shape", 
                                           .description = "The shape of the Kmer.",
                                           .validator = shape_validator});
-        
-    
     
         //Window size input
         parser.add_option(config.window_input, 
@@ -130,16 +130,6 @@ int run_build(sharg::parser & parser)
             config.verbose,
             sharg::config{.short_id = 'v', .long_id = "verbose", .description = "Give more detailed information."});
         
-    //auto sequence_size  ...
-    config.shape = get_shape(config.shape_input);
-    config.shape_size = config.shape.size();
-
-    //Validating Window Input
-    if(config.window_input <= config.shape_size){
-        throw std::runtime_error("Window size to big");
-
-    }
-
     try
     {
         parser.parse();
@@ -148,6 +138,21 @@ int run_build(sharg::parser & parser)
     {
         std::cerr << "[Error build] " << ext.what() << "\n";
         return -1;
+    }
+
+    //auto sequence_size  ...
+    config.shape = get_shape(config.shape_input);
+    config.shape_size = config.shape.size();
+
+    //Validating Window Input
+    if(config.window_input <= config.shape_size){
+        throw std::runtime_error("Window size too small (must be > shape size)");
+    }
+
+    //Validating Shape Input
+    if (std::none_of(config.shape_input.begin(), config.shape_input.end(),
+                 [](char c){ return c == '1'; })){
+        throw std::runtime_error("Invalid shape: must contain at least one '1'.");
     }
 
 
@@ -206,7 +211,6 @@ int run_set_intersection(sharg::parser & parser)
                       .validator = sharg::output_file_validator{}});
 
 
-
     parser.add_positional_option(args.index_file1, sharg::config{.description = "The first index file to merge."});
     parser.add_positional_option(args.index_file2, sharg::config{.description = "The second index file to merge."});
 
@@ -262,7 +266,6 @@ int run_set_difference(sharg::parser & parser)
                       .description = "The output txt file with difference.",
                       .default_message = "Print to terminal (stdout)",
                       .validator = sharg::output_file_validator{}});
-
 
 
     parser.add_positional_option(args.index_file1, sharg::config{.description = "The first index file to merge."});
