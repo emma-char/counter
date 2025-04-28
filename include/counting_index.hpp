@@ -25,11 +25,8 @@ struct counting_index
 
         for (auto & record : fin_from_filename)
         {
-            //seqan3::debug_stream << "ID:  " << record.id() << '\n';
-            seqan3::debug_stream << "SEQ: " << record.sequence() << '\n';
 
             auto minimisers = record.sequence() | seqan3::views::minimiser_hash(seqan3::shape{config.shape}, seqan3::window_size{config.window_input});
-            //seqan3::debug_stream << minimisers << '\n';
 
             for (uint64_t i : minimisers){
                 u[i]++; //counting

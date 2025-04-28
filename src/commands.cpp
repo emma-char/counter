@@ -11,6 +11,12 @@
 
 kmer_index set_union(counting_index const & a, counting_index const & b)
 {
+    if (a.shape != b.shape) 
+    {
+        std::cerr << "[Error set union] Shapes do not match! Returning empty result.\n";
+        return kmer_index(a.shape); 
+    }
+    
     kmer_index result(a.shape);
 
     for (auto const & [k, _] : a.u)
@@ -61,6 +67,11 @@ int run_set_union(sharg::parser & parser)
     counting_index idx2(args.index_file2);
     
     kmer_index result = set_union(idx1, idx2);
+
+    if (result.set.empty()) {
+        std::cerr << "[Error set union] Resulting union is empty due to shape mismatch.\n";
+        return -1;
+    }
  
     result.write(args.output);
     save_set_opp(result, args.txt_output);
@@ -155,7 +166,6 @@ int run_build(sharg::parser & parser)
         throw std::runtime_error("Invalid shape: must contain at least one '1'.");
     }
 
-
     counting_index index(config);
 
     if (config.count_threshold > 0)
@@ -179,7 +189,13 @@ int run_build(sharg::parser & parser)
 
 kmer_index set_intersection(counting_index const & a, counting_index const & b)
 {
-    kmer_index result(a.shape); // assumes shape is the same
+    if (a.shape != b.shape) 
+    {
+        std::cerr << "[Error set intersection] Shapes do not match! Returning empty result.\n";
+        return kmer_index(a.shape); 
+    }
+    
+    kmer_index result(a.shape);
 
     for (auto const & [k, _] : a.u)
     {
@@ -220,7 +236,7 @@ int run_set_intersection(sharg::parser & parser)
     }
     catch (sharg::parser_error const & ext)
     {
-        std::cerr << "[Error set union] " << ext.what() << "\n";
+        std::cerr << "[Error set intersection] " << ext.what() << "\n";
         return -1;
     }
 
@@ -229,9 +245,14 @@ int run_set_intersection(sharg::parser & parser)
     counting_index idx2(args.index_file2);
     
     kmer_index result = set_intersection(idx1, idx2);
-    save_set_opp(result, args.txt_output);
+
+    if (result.set.empty()) {
+        std::cerr << "[Error set intersection] Resulting union is empty due to shape mismatch.\n";
+        return -1;
+    }
 
     result.write(args.output);
+    save_set_opp(result, args.txt_output);
 
     return 0;
 
@@ -239,6 +260,12 @@ int run_set_intersection(sharg::parser & parser)
 
 kmer_index set_difference(counting_index const & a, counting_index const & b)
 {
+    if (a.shape != b.shape) 
+    {
+        std::cerr << "[Error set difference] Shapes do not match! Returning empty result.\n";
+        return kmer_index(a.shape);  // Leerer kmer_index mit der Shape von a
+    }
+    
     kmer_index result(a.shape); // assumes same shape in both a and b
 
     for (auto const & [k, _] : a.u)
@@ -277,7 +304,7 @@ int run_set_difference(sharg::parser & parser)
     }
     catch (sharg::parser_error const & ext)
     {
-        std::cerr << "[Error set union] " << ext.what() << "\n";
+        std::cerr << "[Error set difference] " << ext.what() << "\n";
         return -1;
     }
 
@@ -286,6 +313,11 @@ int run_set_difference(sharg::parser & parser)
     counting_index idx2(args.index_file2);
     
     kmer_index result = set_difference(idx1, idx2);
+
+    if (result.set.empty()) {
+        std::cerr << "[Error set difference] Resulting union is empty due to shape mismatch.\n";
+        return -1;
+    }
 
     result.write(args.output);
     save_set_opp(result, args.txt_output);
